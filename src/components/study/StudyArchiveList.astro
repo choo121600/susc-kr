@@ -1,0 +1,58 @@
+---
+import Container from "@components/base/Container.astro";
+import { getCollection } from "astro:content";
+import StudyArchiveCard from "./StudyArchiveCard.astro";
+
+const archive = await getCollection("studyArchive");
+
+// "25 Summer" / "24 Winter" 같은 기수 문자열을 정렬용 숫자로 변환 (여름=.5, 겨울=.0)
+function periodValue(period: string): number {
+	const [yy, season] = period.split(" ");
+	const year = 2000 + Number(yy);
+	return year + (season === "Summer" ? 0.5 : 0);
+}
+
+// 각 스터디의 대표 기수(첫 번째 값)로 그룹화
+const groups = new Map<string, typeof archive>();
+for (const study of archive) {
+	const period = study.data.studyPeriod?.[0] ?? "기타";
+	if (!groups.has(period)) groups.set(period, []);
+	groups.get(period)!.push(study);
+}
+
+// 최신 기수부터 정렬
+const sortedGroups = [...groups.entries()].sort(
+	(a, b) => periodValue(b[0]) - periodValue(a[0]),
+);
+---
+
+<div id="study-archive" class="mt-32">
+	<Container>
+		<div class="mb-8 space-y-2 text-center">
+			<h2 class="text-3xl font-bold text-gray-900 md:text-4xl dark:text-white">지난 스터디</h2>
+			<p class="lg:mx-auto lg:w-6/12 text-gray-600 dark:text-gray-300">
+				SUSC에서 그동안 진행했던 스터디 아카이브입니다.
+			</p>
+		</div>
+
+		{sortedGroups.map(([period, studies]) => (
+			<section class="mb-16">
+				<h3 class="mb-6 text-2xl font-semibold text-center text-gray-800 dark:text-white">
+					{period}
+				</h3>
+				<div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+					{studies.map((study) => (
+						<StudyArchiveCard
+							studyName={study.data.studyName}
+							studyType={study.data.studyType}
+							studyPeriod={study.data.studyPeriod}
+							studyDescription={study.data.studyDescription}
+							mentorNames={study.data.mentorNames}
+							leadName={study.data.leadName}
+						/>
+					))}
+				</div>
+			</section>
+		))}
+	</Container>
+</div>

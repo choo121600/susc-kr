@@ -3,6 +3,7 @@ import BaseHead from "@components/base/BaseHead.astro";
 import Header from "@components/base/Header.astro";
 import Footer from "@components/base/Footer.astro";
 import StudyList from "@components/study/StudyList.astro";
+import StudyArchiveList from "@components/study/StudyArchiveList.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
 
 ---
@@ -18,6 +19,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
 		<main class="space-y-40 mb-40">
 			<div class="relative pt-36 ml-auto">
 				<StudyList />
+				<StudyArchiveList />
 			</div>
 		</main>
 		<Footer />
