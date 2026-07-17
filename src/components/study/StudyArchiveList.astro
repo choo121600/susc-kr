@@ -5,11 +5,13 @@ import StudyArchiveCard from "./StudyArchiveCard.astro";
 
 const archive = await getCollection("studyArchive");
 
-// "25 Summer" / "24 Winter" 같은 기수 문자열을 정렬용 숫자로 변환 (여름=.5, 겨울=.0)
+// "25 Summer" / "23 Winter" 같은 기수 문자열을 정렬용 숫자로 변환
+// 같은 해 안에서 여름(.5)보다 겨울(.75)이 뒤에 오도록 한다 (예: 23 Summer → 23 Winter)
 function periodValue(period: string): number {
 	const [yy, season] = period.split(" ");
 	const year = 2000 + Number(yy);
-	return year + (season === "Summer" ? 0.5 : 0);
+	const seasonOffset = season === "Winter" ? 0.75 : season === "Summer" ? 0.5 : 0;
+	return year + seasonOffset;
 }
 
 // 각 스터디의 대표 기수(첫 번째 값)로 그룹화
